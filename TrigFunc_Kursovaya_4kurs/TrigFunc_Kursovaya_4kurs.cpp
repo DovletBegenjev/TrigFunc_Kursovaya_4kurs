@@ -91,8 +91,8 @@ int main(int argc, char** argv)
 	MPI_Reduce(&sinus, &total_sin, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 	MPI_Reduce(&cosinus, &total_cos, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
-	MPI_Bcast(&total_sin, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	MPI_Bcast(&total_cos, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	/*MPI_Bcast(&total_sin, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Bcast(&total_cos, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);*/
 
 	double t2 = MPI_Wtime() - t1;
 
