@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 	// can't count pi, pi/2, 3*pi/2, 2*pi 
 	int i = 0, j = 0, temp = 0, a = -1, rows = 300;
 
-	double x = 5 * M_PI / 6;
+	double x = 5 * M_PI / 12;
 	double e = 0; // e <= -323
 
 	double denom = 1, b = x, sinus = 0, cosinus = 0;
@@ -62,13 +62,18 @@ int main(int argc, char** argv)
 			sinus += b;
 			++i;
 		}
+	}
 
+	for (j = start; j < stop; j++)
+	{
 		if (rank == 0)
 		{
+			e = pow(10, -j);
 			a = -1;
 			denom = 1;
 			b = x;
 			i = 0;
+			sinus = cosinus = 0;
 		}
 
 		// cos
@@ -91,17 +96,14 @@ int main(int argc, char** argv)
 	MPI_Reduce(&sinus, &total_sin, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 	MPI_Reduce(&cosinus, &total_cos, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
-	/*MPI_Bcast(&total_sin, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-	MPI_Bcast(&total_cos, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);*/
-
 	double t2 = MPI_Wtime() - t1;
 
 	if (rank == 0)
 	{
-		cout << "sinus = " << -sinus << endl;
+		cout << "sinus = " << -total_sin << endl;
 		cout << "sin(x) = " << sin(x) << endl << endl;
 
-		cout << "cosinus = " << -cosinus << endl;
+		cout << "cosinus = " << -total_cos << endl;
 		cout << "cos(x) = " << cos(x) << endl << endl;
 
 		cout << "time = " << t2 << endl;
