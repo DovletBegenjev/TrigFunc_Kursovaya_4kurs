@@ -15,6 +15,10 @@ int main(int argc, char** argv)
 	int rank, size;
 	MPI_Status status;
 
+	MPI_Init(&argc, &argv);
+	MPI_Comm_size(MPI_COMM_WORLD, &size); //кол-во запущен процессов (size)
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
 	// can't count pi, pi/2, 3*pi/2, 2*pi 
 	int i = 0, j = 0, temp = 0, a = -1, rows = 300;
 
@@ -22,13 +26,6 @@ int main(int argc, char** argv)
 	double e = 0; // e <= -323
 
 	double denom = 1, b = x, sinus = 0, cosinus = 0;
-
-	/*cout << "x = ";
-	cin >> x;*/
-
-	MPI_Init(&argc, &argv);
-	MPI_Comm_size(MPI_COMM_WORLD, &size); //кол-во запущен процессов (size)
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	double t1 = MPI_Wtime();
 
@@ -43,10 +40,10 @@ int main(int argc, char** argv)
 		{
 			e = pow(10, -j);
 			a = -1;
-			denom = 1;
+			//denom = 1;
 			b = x;
 			i = 0;
-			sinus = cosinus = 0;
+			sinus = 0;
 		}
 
 		// sin
@@ -62,18 +59,14 @@ int main(int argc, char** argv)
 			sinus += b;
 			++i;
 		}
-	}
 
-	for (j = start; j < stop; j++)
-	{
 		if (rank == 0)
 		{
-			e = pow(10, -j);
 			a = -1;
 			denom = 1;
 			b = x;
 			i = 0;
-			sinus = cosinus = 0;
+			cosinus = 0;
 		}
 
 		// cos
