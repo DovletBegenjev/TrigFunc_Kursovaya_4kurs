@@ -20,68 +20,43 @@ int main(int argc, char** argv)
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
 	// can't count pi, pi/2, 3*pi/2, 2*pi 
-	int i = 0, j = 0, temp = 0, a = -1, rows = 300;
+	int i = 0, rows = 1000;
 
 	double x = 5 * M_PI / 12;
-	double e = 0; // e <= -323
 
-	double denom = 1, b = x, sinus = 0, cosinus = 0;
+	double sinus = 0, cosinus = 0;
+	int temp = 0, temp2 = 0;
+	int a = -1, a2 = -1;
+	double denom = 1, denom2 = 1;
 
 	double t1 = MPI_Wtime();
 
 	int k = rows / size;
 	int start = rank * k; // если 1 процесс то стартовая позиция = 25
-	int stop = (rank + 1) * k;
+	int stop = ((rank + 1) * k);
 	if (rank == size - 1) stop = rows;
 
-	for (j = start; j < stop; j++)
+	MPI_Bcast(&sinus, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+	MPI_Bcast(&cosinus, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+	for (i = start; i < stop; i++)
 	{
-		if (rank == 0)
-		{
-			e = pow(10, -j);
-			a = -1;
-			//denom = 1;
-			b = x;
-			i = 0;
-			sinus = 0;
-		}
-
 		// sin
-		while (abs(b) > e)
+		temp = 2 * i + 1;
+		for (int j = 1; j <= temp; j++)
 		{
-			temp = 2 * i + 1;
-			if (i > 0)
-			{
-				denom *= (temp - 1) * temp; // факториал denom = (2n+1)!
-				a *= -1;
-			}
-			b = (a * pow(x, temp)) / denom;
-			sinus += b;
-			++i;
+			denom *= j;
 		}
-
-		if (rank == 0)
-		{
-			a = -1;
-			denom = 1;
-			b = x;
-			i = 0;
-			cosinus = 0;
-		}
+		sinus += (pow(-1, i) * pow(x, temp)) / denom;
 
 		// cos
-		while (abs(b) > e)
+		temp2 = 2 * i;
+		for (int j = 1; j <= temp2; j++)
 		{
-			temp = 2 * i;
-			if (i > 0)
-			{
-				denom *= (temp - 1) * temp; // факториал denom = (2n+1)!
-				a *= -1;
-			}
-			b = (a * pow(x, temp)) / denom;
-			cosinus += b;
-			++i;
+			denom2 *= j;
 		}
+		cosinus += (pow(-1, i) * pow(x, temp2)) / denom2;
+		denom = denom2 = 1;
 	}
 
 	double total_sin = 0, total_cos = 0;
@@ -93,10 +68,10 @@ int main(int argc, char** argv)
 
 	if (rank == 0)
 	{
-		cout << "sinus = " << -total_sin << endl;
+		cout << "sinus = " << total_sin << endl;
 		cout << "sin(x) = " << sin(x) << endl << endl;
 
-		cout << "cosinus = " << -total_cos << endl;
+		cout << "cosinus = " << total_cos << endl;
 		cout << "cos(x) = " << cos(x) << endl << endl;
 
 		cout << "time = " << t2 << endl;
